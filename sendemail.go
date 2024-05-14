@@ -10,6 +10,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	Separator = "\u0000"
+)
+
 type EmailConfig struct {
 	Username string `json:"user"`
 	Password string `json:"pass"`
@@ -46,7 +50,7 @@ func SendEmail(to []string, txt string) {
 	message := emailConfig.Message
 	subject := emailConfig.Subject
 	if len(txt) > 0 {
-		if parts := strings.Split(txt, "\u0000"); len(parts) > 1 {
+		if parts := strings.Split(txt, Separator); len(parts) > 1 {
 			subject = parts[0]
 			message = parts[1]
 		} else {
