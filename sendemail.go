@@ -2,11 +2,12 @@ package mail
 
 import (
 	"encoding/json"
-	"github.com/nontechno/link"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/smtp"
 	"strings"
+
+	"github.com/nontechno/link"
+	log "github.com/sirupsen/logrus"
 )
 
 type EmailConfig struct {
@@ -43,13 +44,19 @@ func SendEmail(to []string, txt string) {
 	}
 
 	message := emailConfig.Message
+	subject := emailConfig.Subject
 	if len(txt) > 0 {
-		message = txt
+		if parts := strings.Split(txt, "\u0000"); len(parts) > 1 {
+			subject = parts[0]
+			message = parts[1]
+		} else {
+			message = txt
+		}
 	}
 
 	msg := []byte("To:" + strings.Join(to, ";") +
 		"\r\nFrom: " + emailConfig.From +
-		"\r\nSubject: " + emailConfig.Subject +
+		"\r\nSubject: " + subject +
 		"\r\nContent-Type: text/plain\r\n\r\n" +
 		message)
 
